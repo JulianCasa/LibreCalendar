@@ -1,5 +1,5 @@
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class ThemeManager {
 
@@ -9,6 +9,7 @@ public class ThemeManager {
     static final Color LIGHT_TODAY        = new Color(255, 220, 220);
     static final Color LIGHT_WEEKEND      = new Color(235, 235, 255);
     static final Color LIGHT_SELECTED     = new Color(204, 255, 204);
+    static final Color LIGHT_HOLIDAY      = new Color(255, 215, 0);       // Gold
     static final Color LIGHT_INACTIVE_FG  = new Color(180, 180, 180);
     static final Color LIGHT_INACTIVE_WKD = new Color(245, 245, 255);
     static final Color LIGHT_INACTIVE_WKD2= new Color(250, 250, 250);
@@ -21,6 +22,7 @@ public class ThemeManager {
     static final Color DARK_TODAY         = new Color(120, 50, 50);
     static final Color DARK_WEEKEND       = new Color(40, 40, 70);
     static final Color DARK_SELECTED      = new Color(40, 80, 40);
+    static final Color DARK_HOLIDAY       = new Color(200, 170, 0);       // Darker gold
     static final Color DARK_INACTIVE_FG   = new Color(90, 90, 90);
     static final Color DARK_INACTIVE_WKD  = new Color(35, 35, 55);
     static final Color DARK_INACTIVE_WKD2 = new Color(28, 28, 28);
@@ -34,6 +36,7 @@ public class ThemeManager {
     static Color today()      { return LibreCal.darkMode ? DARK_TODAY        : LIGHT_TODAY;        }
     static Color weekend()    { return LibreCal.darkMode ? DARK_WEEKEND      : LIGHT_WEEKEND;      }
     static Color selected()   { return LibreCal.darkMode ? DARK_SELECTED     : LIGHT_SELECTED;     }
+    static Color holiday()    { return LibreCal.darkMode ? DARK_HOLIDAY      : LIGHT_HOLIDAY;      }
     static Color inactiveFg() { return LibreCal.darkMode ? DARK_INACTIVE_FG  : LIGHT_INACTIVE_FG;  }
     static Color inactiveWkd(){ return LibreCal.darkMode ? DARK_INACTIVE_WKD : LIGHT_INACTIVE_WKD; }
     static Color inactiveDay(){ return LibreCal.darkMode ? DARK_INACTIVE_WKD2: LIGHT_INACTIVE_WKD2;}

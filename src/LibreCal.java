@@ -1,9 +1,9 @@
-import javax.swing.*;
-import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-import java.util.prefs.Preferences; // added for saving light/dark mode preference across sessions
+import java.util.prefs.Preferences;
+import javax.swing.*;
+import javax.swing.table.*; // added for saving light/dark mode preference across sessions
 
 public class LibreCal {//Authored by Vaibhav Thakkar, Ariane Quenum, Michael Woelfel
     // Modified by Arek Gubala
@@ -166,6 +166,11 @@ public class LibreCal {//Authored by Vaibhav Thakkar, Ariane Quenum, Michael Woe
         for (int i = todayYear - 100; i <= todayYear + 100; i++) {
             comboYear.addItem(String.valueOf(i));
         }
+        
+        // Load holidays for current year and surrounding years
+        HolidayManager.loadPresetHolidays(todayYear - 1);
+        HolidayManager.loadPresetHolidays(todayYear);
+        HolidayManager.loadPresetHolidays(todayYear + 1);
     
         CalendarUtils.refreshCalendar(todayMonth, todayYear);
     }
