@@ -75,4 +75,26 @@ public class ThemeManager {
         LibreCal.tabelCal.getTableHeader().repaint();
         LibreCal.tabelCal.repaint();
     }
+
+    // colors for the reminder dialog based on user preference
+    public static void styleReminderDialog(JDialog dialog, JList<String> list, JTextField field, JPanel bottom, JPanel btnRow, JScrollPane scrollPane) {
+        if (LibreCal.darkMode) {
+            // main window frame
+            dialog.getContentPane().setBackground(bg());
+            bottom.setBackground(bg());
+            btnRow.setBackground(bg());
+    
+            // text list and background
+            list.setBackground(bg());
+            list.setForeground(text());
+            scrollPane.getViewport().setBackground(bg());
+            scrollPane.setBorder(BorderFactory.createLineBorder(header()));
+    
+            // input field
+            field.setBackground(header());
+            field.setForeground(text());
+            field.setCaretColor(text());
+            field.setBorder(BorderFactory.createLineBorder(bg()));
+        }
+    }
 }

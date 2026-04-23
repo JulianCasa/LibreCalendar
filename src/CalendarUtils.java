@@ -1,13 +1,13 @@
 import java.util.*;
 import java.util.List;
 import java.util.prefs.Preferences;
-
 import javax.swing.*;
 import java.awt.*;
-
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.awt.image.BufferedImage;
 
 public class CalendarUtils {
-
 
     public static void refreshCalendar(int month, int year) {
         String[] months = {"January","February","March","April","May","June",
@@ -68,70 +68,109 @@ public class CalendarUtils {
 
 
     public static void showReminderDialog(JFrame parent, int year, int month, int day) {
-    
         String[] months = {
             "January","February","March","April","May","June",
             "July","August","September","October","November","December"
         };
-    
-        List<String> dayReminders = getReminders(year, month, day);
-    
-        JDialog dialog = new JDialog(parent,
-                months[month] + " " + day + ", " + year,
-                true);
-    
+ 
+        List<String> dayReminders = ReminderManager.getReminders(year, month, day);
+ 
+        JDialog dialog = new JDialog(parent, months[month] + " " + day + ", " + year, true);
         dialog.setLayout(new BorderLayout(10, 10));
-        dialog.setMinimumSize(new Dimension(350, 280));
-    
+        dialog.setMinimumSize(new Dimension(380, 320));
+ 
+        // ── Reminder list ────────────────────────────────────────────────────
         DefaultListModel<String> listModel = new DefaultListModel<>();
-        for (String r : dayReminders) {
-            listModel.addElement(r);
-        }
-    
+        for (String r : dayReminders) listModel.addElement(r);
         JList<String> list = new JList<>(listModel);
         dialog.add(new JScrollPane(list), BorderLayout.CENTER);
-    
+ 
+        // ── Input area ───────────────────────────────────────────────────────
         JPanel bottom = new JPanel(new BorderLayout(5, 5));
         bottom.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
-    
+ 
+        // Time row: hour spinner + AM/PM toggle + reminder text field
+        JPanel timeRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+ 
+        // Hour spinner 1-12
+        SpinnerNumberModel hourModel = new SpinnerNumberModel(12, 1, 12, 1);
+        JSpinner hourSpinner = new JSpinner(hourModel);
+        hourSpinner.setPreferredSize(new Dimension(55, 26));
+ 
+        // Minute spinner 0-59, displayed as two digits
+        SpinnerNumberModel minModel = new SpinnerNumberModel(0, 0, 59, 1);
+        JSpinner minSpinner = new JSpinner(minModel);
+        minSpinner.setPreferredSize(new Dimension(55, 26));
+        // Format minutes as 00, 01 ... 59
+        JSpinner.NumberEditor minEditor = new JSpinner.NumberEditor(minSpinner, "00");
+        minSpinner.setEditor(minEditor);
+ 
+        // AM/PM toggle button — pressing it flips between AM and PM
+        JToggleButton amPmToggle = new JToggleButton("AM");
+        amPmToggle.setPreferredSize(new Dimension(50, 26));
+        amPmToggle.addActionListener(e ->
+            amPmToggle.setText(amPmToggle.isSelected() ? "PM" : "AM")
+        );
+ 
+        timeRow.add(new JLabel("Time:"));
+        timeRow.add(hourSpinner);
+        timeRow.add(new JLabel(":"));
+        timeRow.add(minSpinner);
+        timeRow.add(amPmToggle);
+ 
+        // Reminder text field
         JTextField field = new JTextField();
+        field.setToolTipText("Enter reminder note");
+ 
+        // Add / Delete buttons
         JButton addBtn = new JButton("Add");
         JButton delBtn = new JButton("Delete");
-    
-        addBtn.addActionListener(e -> {
-            String text = field.getText().trim();
-            if (!text.isEmpty()) {
-                listModel.addElement(text);
-                dayReminders.add(text);
-                saveReminders(year, month, day, dayReminders);
+ 
+        JPanel btnRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+        btnRow.add(delBtn);
+        btnRow.add(addBtn);
+ 
+        bottom.add(timeRow,  BorderLayout.NORTH);
+        bottom.add(field,    BorderLayout.CENTER);
+        bottom.add(btnRow,   BorderLayout.SOUTH);
+        dialog.add(bottom, BorderLayout.SOUTH);
+ 
+        // ── Listeners ────────────────────────────────────────────────────────
+        Runnable doAdd = () -> {
+            String note = field.getText().trim();
+            if (!note.isEmpty()) {
+                int    hour   = (int) hourSpinner.getValue();
+                int    minute = (int) minSpinner.getValue();
+                String amPm   = amPmToggle.getText(); // "AM" or "PM"
+ 
+                // Format: "10:05 AM | Take medication"
+                String entry = String.format("%d:%02d %s | %s", hour, minute, amPm, note);
+                listModel.addElement(entry);
+                dayReminders.add(entry);
+                ReminderManager.saveReminders(year, month, day, dayReminders);
                 field.setText("");
+                LibreCal.tabelCal.repaint();
             }
-        });
-    
-        field.addActionListener(e -> addBtn.doClick());
-    
+        };
+ 
+        addBtn.addActionListener(e -> doAdd.run());
+        field.addActionListener(e -> doAdd.run()); // Enter key also adds
+ 
         delBtn.addActionListener(e -> {
             int idx = list.getSelectedIndex();
             if (idx != -1) {
                 listModel.remove(idx);
                 dayReminders.remove(idx);
-                saveReminders(year, month, day, dayReminders);
+                ReminderManager.saveReminders(year, month, day, dayReminders);
+                LibreCal.tabelCal.repaint();
             }
         });
-    
-        JPanel btnRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
-        btnRow.add(delBtn);
-        btnRow.add(addBtn);
-    
-        bottom.add(field, BorderLayout.CENTER);
-        bottom.add(btnRow, BorderLayout.SOUTH);
-    
-        dialog.add(bottom, BorderLayout.SOUTH);
-    
+ 
         dialog.pack();
         dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
     }
+
 
     static Preferences prefs =
         Preferences.userNodeForPackage(CalendarUtils.class);
