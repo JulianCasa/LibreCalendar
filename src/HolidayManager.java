@@ -87,7 +87,7 @@ public class HolidayManager {
         addHoliday(year, 8, getFirstMonday(year, 8), "Labor Day");
         
         // Columbus Day (second Monday in October)
-        addHoliday(year, 9, getSecondMonday(year, 9), "Columbus Day");
+        addHoliday(year, 9, getSecondMonday(year, 9), "Indigenous Peoples' Day");
         
         // Veterans Day
         addHoliday(year, 10, 11, "Veterans Day");
