@@ -30,6 +30,7 @@ public class LibreCal {//Authored by Vaibhav Thakkar, Ariane Quenum, Michael Woe
         initListeners();
         initLayout();
         initData();
+        CalendarUtils.Notifier.startNotifier();
         finalizeUI();
     }
 

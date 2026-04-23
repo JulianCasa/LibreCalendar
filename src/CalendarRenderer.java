@@ -19,8 +19,8 @@ public class CalendarRenderer extends DefaultTableCellRenderer {
             setText(String.valueOf(displayDate));
 
             // 👇 ADD THIS BLOCK HERE
-            List<String> reminders =
-                CalendarUtils.getReminders(
+            List<ReminderManager.Reminder> reminders =
+                ReminderManager.getReminders(
                     LibreCal.currentYear,
                     LibreCal.currentMonth,
                     displayDate
@@ -68,7 +68,6 @@ public class CalendarRenderer extends DefaultTableCellRenderer {
 }
 
 
-// 🔽 HEADER RENDERER (moved here like you wanted)
 class HeaderRenderer extends DefaultTableCellRenderer {
 
     public Component getTableCellRendererComponent(JTable table, Object value,

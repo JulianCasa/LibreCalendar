@@ -77,24 +77,56 @@ public class ThemeManager {
     }
 
     // colors for the reminder dialog based on user preference
-    public static void styleReminderDialog(JDialog dialog, JList<String> list, JTextField field, JPanel bottom, JPanel btnRow, JScrollPane scrollPane) {
-        if (LibreCal.darkMode) {
-            // main window frame
-            dialog.getContentPane().setBackground(bg());
-            bottom.setBackground(bg());
-            btnRow.setBackground(bg());
+    public static void styleReminderDialog(JDialog dialog, JList<ReminderManager.Reminder> list, 
+        JTextField field, JPanel bottom, JPanel btnRow, JScrollPane scrollPane, 
+        JPanel timeRow, JSpinner hourSpinner, JSpinner minSpinner, JToggleButton amPmToggle) {
+            
+            if (LibreCal.darkMode) {
+                // 1. Fix the Mac Native Title Bar
+                // This tells macOS to use the dark mode version of the window frame
+                dialog.getRootPane().putClientProperty("apple.awt.windowAppearance", "NSAppearanceNameDarkAqua");
     
-            // text list and background
-            list.setBackground(bg());
-            list.setForeground(text());
-            scrollPane.getViewport().setBackground(bg());
-            scrollPane.setBorder(BorderFactory.createLineBorder(header()));
+                // main window frame
+                dialog.getContentPane().setBackground(bg());
+                bottom.setBackground(bg());
+                btnRow.setBackground(bg());
+                timeRow.setBackground(bg());
     
-            // input field
-            field.setBackground(header());
-            field.setForeground(text());
-            field.setCaretColor(text());
-            field.setBorder(BorderFactory.createLineBorder(bg()));
+                // text list and background
+                list.setBackground(bg());
+                list.setForeground(text());
+                scrollPane.getViewport().setBackground(bg());
+                scrollPane.setBorder(BorderFactory.createLineBorder(header()));
+    
+                // 2. Lighten up the Text Field
+                // Creates a distinct, lighter gray so the input field doesn't disappear into the background
+                Color fieldBg = new Color(65, 65, 65); 
+                field.setBackground(fieldBg);
+                field.setForeground(text());
+                field.setCaretColor(text());
+                // Add a subtle border and some padding so the text doesn't hit the absolute edge
+                field.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(100, 100, 100)),
+                    BorderFactory.createEmptyBorder(2, 5, 2, 5)
+                ));
+    
+                // spinner text
+                JTextField hEditor = ((JSpinner.DefaultEditor) hourSpinner.getEditor()).getTextField();
+                hEditor.setBackground(fieldBg);
+                hEditor.setForeground(text());
+                hEditor.setBorder(BorderFactory.createEmptyBorder());
+    
+                JTextField mEditor = ((JSpinner.DefaultEditor) minSpinner.getEditor()).getTextField();
+                mEditor.setBackground(fieldBg);
+                mEditor.setForeground(text());
+                mEditor.setBorder(BorderFactory.createEmptyBorder());
+    
+                // 3. Fix the AM/PM Toggle
+                amPmToggle.setBackground(fieldBg);
+                amPmToggle.setForeground(text());
+                // macOS buttons are transparent by default; this forces the color to actually paint
+                amPmToggle.setOpaque(true); 
+                amPmToggle.setBorderPainted(false);
+            }
         }
-    }
 }
