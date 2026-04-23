@@ -100,7 +100,6 @@ public class CalendarRenderer extends DefaultTableCellRenderer {
 }
 
 
-// 🔽 HEADER RENDERER (moved here like you wanted)
 class HeaderRenderer extends DefaultTableCellRenderer {
 
     @Override
