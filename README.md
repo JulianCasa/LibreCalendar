@@ -14,7 +14,7 @@ Contributors: arekGuba, JulianCasa, and abdullahkhan140
 
 ---
 
-## 🚀 Quick Start (For Developers)
+## Installation
 
 Make sure you have the **Java Development Kit (JDK 14+)** installed on your system.
 
