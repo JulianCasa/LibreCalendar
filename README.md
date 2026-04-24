@@ -4,7 +4,7 @@
 
 **LibreCalendar** is a lightweight desktop calendar application built with Java Swing. We are dedicated to providing a clean, open-source alternative to proprietary calendar apps, powered by the open-source community.
 
-LibreCalendar was originally authored by Vaibhav Thakkar, Ariane Quenum, Michael Woelfel.
+LibreCalendar was originally authored by Vaibhav Thakkar, Ariane Quenum, Michael Woelfel.  
 Contributors: arekGuba, JulianCasa, and abdullahkhan140
 
 ## ✨ Features
