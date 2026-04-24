@@ -28,7 +28,8 @@ Make sure you have the **Java Development Kit (JDK 14+)** installed on your syst
 
 **For Windows users (WITH WIX INSTALLED):**
 1. Run the `build.bat` script in your terminal.
-2. You may open the application, stored in `/output`.
+2. Run the setup .exe file, stored in `/output`.
+3. Search for LibreCalendar.exe in your startmenu!
 
 ## License
 
