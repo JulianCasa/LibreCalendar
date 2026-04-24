@@ -7,7 +7,7 @@
 LibreCalendar was originally authored by Vaibhav Thakkar, Ariane Quenum, Michael Woelfel.  
 Contributors: arekGuba, JulianCasa, and abdullahkhan140
 
-## ✨ Features
+##  Features
 * **Native Installer:** Packaged for macOS (`.app`) and Windows (`.exe`)!
 * **Smart UI Integration:** Seamlessly adapts to your workflow with a built-in Dark Mode and Light Mode toggle.
 * **Persistent Reminders:** Double-click any day to set precise, time-based reminders that notify you directly via system tray alerts.
