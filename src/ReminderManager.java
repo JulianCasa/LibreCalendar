@@ -1,3 +1,7 @@
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.prefs.Preferences;
 
@@ -50,6 +54,13 @@ public class ReminderManager {
             return getTimeKey();
         }
 
+        public LocalTime toLocalTime() {
+            int h = this.hour;
+            if (amPm.equalsIgnoreCase("PM") && hour != 12) h += 12;
+            else if (amPm.equalsIgnoreCase("AM") && hour == 12) h = 0;
+            return LocalTime.of(h, minute);
+        }
+
         @Override
         public String toString() {
             return timeString() + " - " + message;
@@ -72,6 +83,8 @@ public class ReminderManager {
             }
         }
 
+        // chronologically sort reminders within dates
+        list.sort(Comparator.comparing(Reminder::toLocalTime));
         return list;
     }
 
@@ -89,6 +102,7 @@ public class ReminderManager {
     public static void addReminder(int year, int month, int day, Reminder r) {
         List<Reminder> list = getReminders(year, month, day);
         list.add(r);
+        list.sort(Comparator.comparing(Reminder::toLocalTime));
         saveReminders(year, month, day, list);
     }
 
@@ -97,6 +111,46 @@ public class ReminderManager {
         if (index >= 0 && index < list.size()) {
             list.remove(index);
             saveReminders(year, month, day, list);
+        }
+    }
+
+    
+    // Checks for any reminders that are past due and sends a notification if found
+    public static void checkMissedReminders() {
+        int missedCount = 0;
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH);
+
+        try {
+            String[] allKeys = prefs.keys();
+            for (String key : allKeys) {
+                if (key.startsWith(KEY_PREFIX)) {
+                    String datePart = key.substring(KEY_PREFIX.length()); 
+                    LocalDate reminderDate = LocalDate.parse(datePart);
+
+                    List<Reminder> reminders = getReminders(
+                        reminderDate.getYear(), 
+                        reminderDate.getMonthValue() - 1, 
+                        reminderDate.getDayOfMonth()
+                    );
+
+                    for (Reminder r : reminders) {
+                        LocalTime reminderTime = LocalTime.parse(r.getTimeKey(), timeFormatter);
+                        LocalDateTime combinedDT = LocalDateTime.of(reminderDate, reminderTime);
+
+                        if (combinedDT.isBefore(now)) {
+                            missedCount++;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (missedCount > 0) {
+            CalendarUtils.Notifier.send("Missed Reminders", 
+                "You have " + missedCount + " past reminders waiting for you!");
         }
     }
 }

@@ -136,22 +136,20 @@ public class CalendarUtils {
 
         dialog.add(bottom, BorderLayout.SOUTH);
 
-        // Listeners for user-input
+        // Add and Delete for reminders
         Runnable doAdd = () -> {
             String note = field.getText().trim();
             if (!note.isEmpty()) {
-
                 int hour = (int) hourSpinner.getValue();
                 int minute = (int) minSpinner.getValue();
                 String amPm = amPmToggle.getText();
 
-                ReminderManager.Reminder r =
-                        new ReminderManager.Reminder(hour, minute, amPm, note);
-
-                listModel.addElement(r);
-                dayReminders.add(r);
-
-                ReminderManager.saveReminders(year, month, day, dayReminders);
+                ReminderManager.Reminder r = new ReminderManager.Reminder(hour, minute, amPm, note);
+                ReminderManager.addReminder(year, month, day, r);
+                listModel.clear();
+                for (ReminderManager.Reminder sortedR : ReminderManager.getReminders(year, month, day)) {
+                    listModel.addElement(sortedR);
+                }
 
                 field.setText("");
                 LibreCal.tabelCal.repaint();
@@ -163,10 +161,11 @@ public class CalendarUtils {
         delBtn.addActionListener(e -> {
             int idx = list.getSelectedIndex();
             if (idx != -1) {
-                listModel.remove(idx);
-                dayReminders.remove(idx);
-                ReminderManager.saveReminders(year, month, day, dayReminders);
-                LibreCal.tabelCal.repaint();
+                ReminderManager.deleteReminder(year, month, day, idx);
+                listModel.clear();
+                for (ReminderManager.Reminder sortedR : ReminderManager.getReminders(year, month, day)) {
+                    listModel.addElement(sortedR);
+                }
             }
         });
 

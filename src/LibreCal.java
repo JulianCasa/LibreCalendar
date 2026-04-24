@@ -27,6 +27,7 @@ public class LibreCal {
         initListeners();
         initLayout();
         initData();
+        ReminderManager.checkMissedReminders();
         CalendarUtils.Notifier.startNotifier();
         finalizeUI();
     }
