@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.awt.image.BufferedImage;
 
 public class CalendarUtils {
 
@@ -137,22 +136,20 @@ public class CalendarUtils {
 
         dialog.add(bottom, BorderLayout.SOUTH);
 
-        // Listeners for user-input
+        // Add and Delete for reminders
         Runnable doAdd = () -> {
             String note = field.getText().trim();
             if (!note.isEmpty()) {
-
                 int hour = (int) hourSpinner.getValue();
                 int minute = (int) minSpinner.getValue();
                 String amPm = amPmToggle.getText();
 
-                ReminderManager.Reminder r =
-                        new ReminderManager.Reminder(hour, minute, amPm, note);
-
-                listModel.addElement(r);
-                dayReminders.add(r);
-
-                ReminderManager.saveReminders(year, month, day, dayReminders);
+                ReminderManager.Reminder r = new ReminderManager.Reminder(hour, minute, amPm, note);
+                ReminderManager.addReminder(year, month, day, r);
+                listModel.clear();
+                for (ReminderManager.Reminder sortedR : ReminderManager.getReminders(year, month, day)) {
+                    listModel.addElement(sortedR);
+                }
 
                 field.setText("");
                 LibreCal.tabelCal.repaint();
@@ -164,10 +161,11 @@ public class CalendarUtils {
         delBtn.addActionListener(e -> {
             int idx = list.getSelectedIndex();
             if (idx != -1) {
-                listModel.remove(idx);
-                dayReminders.remove(idx);
-                ReminderManager.saveReminders(year, month, day, dayReminders);
-                LibreCal.tabelCal.repaint();
+                ReminderManager.deleteReminder(year, month, day, idx);
+                listModel.clear();
+                for (ReminderManager.Reminder sortedR : ReminderManager.getReminders(year, month, day)) {
+                    listModel.addElement(sortedR);
+                }
             }
         });
 
@@ -180,7 +178,6 @@ public class CalendarUtils {
         dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
     }
-
 
     public static class Notifier {
 
@@ -203,7 +200,7 @@ public class CalendarUtils {
                 for (ReminderManager.Reminder r : reminders) {
                     if (r.getTimeKey().equals(nowKey) && !fired.contains(r.serialize())) {
                         
-                        send("LibreCalendar", r.message); // Pass title and message
+                        send("Reminder!", r.message); // Pass title and message
                         fired.add(r.serialize());
                     }
                 }
@@ -218,56 +215,31 @@ public class CalendarUtils {
             timer.start();
         }
 
-        private static void send(String title, String msg) {
-            // 1. Detect if the user is on a Mac
-            String os = System.getProperty("os.name").toLowerCase();
-            boolean isMac = os.contains("mac");
 
-            if (isMac) {
-                // MAC OS: Use the AppleScript bypass
-                try {
-                    String appleScript = String.format(
-                        "display notification \"%s\" with title \"%s\"",
-                        msg, title
-                    );
-                    Runtime.getRuntime().exec(new String[] { "osascript", "-e", appleScript });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else {
-                // WINDOWS / LINUX: Use the standard Java System Tray
-                if (!SystemTray.isSupported()) {
-                    // Ultimate fallback if no system tray exists at all
-                    JOptionPane.showMessageDialog(LibreCal.mainFrame, msg, title, JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                }
+        // send notifications to user using SystemTray API
+        public static void send(String title, String message) {
+            if (!SystemTray.isSupported()) {
+                System.out.println("SystemTray is not supported");
+                return;
+            }
+        
+            try {
+                SystemTray tray = SystemTray.getSystemTray();
+                
+                java.net.URL imgURL = CalendarUtils.class.getResource("/assets/SquareLogo.png");
+                Image image = new ImageIcon(imgURL).getImage();
+        
+                TrayIcon trayIcon = new TrayIcon(image, "Reminder!");
+                trayIcon.setImageAutoSize(true);
+                tray.add(trayIcon);
 
-                try {
-                    SystemTray tray = SystemTray.getSystemTray();
-                    
-                    java.net.URL imgURL = CalendarUtils.class.getResource("LogoLibreCal.png");
-                    Image img;
-                    
-                    if (imgURL != null) {
-                        img = new ImageIcon(imgURL).getImage();
-                    } else {
-                        // Fallback blank image just in case the file gets lost
-                        img = new BufferedImage(16, 16, java.awt.image.BufferedImage.TYPE_INT_ARGB);
-                    }
-                    TrayIcon icon = new TrayIcon(img, title);
-                    icon.setImageAutoSize(true);
-
-                    tray.add(icon);
-                    icon.displayMessage(title, msg, TrayIcon.MessageType.INFO);
-
-                    // Clean notification popup after 6 seconds
-                    new java.util.Timer().schedule(new java.util.TimerTask() {
-                        public void run() { tray.remove(icon); }
-                    }, 6000);
-
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+                trayIcon.displayMessage(title, message, TrayIcon.MessageType.INFO);
+        
+                // Clean up try icon after 5 seconds
+                new javax.swing.Timer(5000, e -> tray.remove(trayIcon)).start();
+        
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
