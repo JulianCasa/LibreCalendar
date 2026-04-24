@@ -5,9 +5,7 @@ import java.awt.event.*;
 import java.util.*;
 import java.util.prefs.Preferences;
 
-public class LibreCal {//Authored by Vaibhav Thakkar, Ariane Quenum, Michael Woelfel
-    // Modified by Arek Gubala
-
+public class LibreCal {
     static JLabel LabelMonth, calendarLogoLabel;
     static JButton buttonPrev, buttonNext, buttonDarkMode;
     static JTable tabelCal;

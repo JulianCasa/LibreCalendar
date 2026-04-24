@@ -1,4 +1,5 @@
 #!/bin/bash
+cd "$(dirname "$0")/.."
 
 rm -rf output input *.jar src/*.class LibreCal.icns
 
@@ -15,6 +16,7 @@ iconutil -c icns assets/LibreCal.iconset -o LibreCal.icns
 mkdir -p input
 cp LibreCalendar.jar input/
 
+echo "Packaging app..."
 jpackage \
   --type app-image \
   --name "LibreCalendar" \
