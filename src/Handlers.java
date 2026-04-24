@@ -4,6 +4,7 @@ import java.util.prefs.Preferences;
 public class Handlers {
 
     public static class ButtonPrevAction implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent e) {
             if (LibreCal.currentMonth == 0) {
                 LibreCal.currentMonth = 11;
@@ -16,6 +17,7 @@ public class Handlers {
     }
 
     public static class ButtonNextAction implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent e) {
             if (LibreCal.currentMonth == 11) {
                 LibreCal.currentMonth = 0;
@@ -28,6 +30,7 @@ public class Handlers {
     }
 
     public static class ButtonDarkModeAction implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent e) {
             LibreCal.darkMode = !LibreCal.darkMode;
             LibreCal.buttonDarkMode.setText(LibreCal.darkMode ? "\u2600" : "\u263E"); // ☀ or ☾
@@ -40,6 +43,7 @@ public class Handlers {
     }
 
     public static class ComboYearAction implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent e) {
             if (LibreCal.comboYear.getSelectedItem() != null) {
                 String b = LibreCal.comboYear.getSelectedItem().toString();

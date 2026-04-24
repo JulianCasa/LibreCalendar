@@ -32,8 +32,8 @@ public class CalendarRenderer extends DefaultTableCellRenderer {
             if (!reminders.isEmpty()) {
                 tooltipText = "Reminders: " + reminders.size();
                 cellText.append("<br>");
-                for (String reminder : reminders) {
-                    cellText.append(reminder).append("<br>");
+                for (ReminderManager.Reminder reminder : reminders) {
+                    cellText.append(reminder.getTimeKey()).append(" - ").append(reminder.message).append("<br>");
                 }
             }
 
@@ -68,7 +68,7 @@ public class CalendarRenderer extends DefaultTableCellRenderer {
                 // html used to allow multi-line text and smaller font for reminder count
                 if (!reminders.isEmpty()) {
                     setText("<html>" + displayDate + 
-                            "<br><span style='font-size:8px'>● " + reminders.size() + " reminder" +
+                            "<br><span style='font-size:8px'>* " + reminders.size() + " reminder" +
                             (reminders.size() > 1 ? "s" : "") + "</span></html>");
                 }
 

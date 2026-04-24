@@ -61,6 +61,7 @@ public class LibreCal {
         buttonDarkMode.setToolTipText("Toggle dark mode");
     
         mtabelCal = new DefaultTableModel() {
+            @Override
             public boolean isCellEditable(int r, int c) { return false; }
         };
         tabelCal = new JTable(mtabelCal);
@@ -114,6 +115,7 @@ public class LibreCal {
             .put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "clearHighlight");
     
         tabelCal.getActionMap().put("clearHighlight", new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 tabelCal.clearSelection();
             }
@@ -121,12 +123,14 @@ public class LibreCal {
     
         // Handle verticle scaling of calendar cells when the window is resized
         theScrollPane.addComponentListener(new ComponentAdapter() {
+            @Override
             public void componentResized(ComponentEvent e) {
                 CalendarUtils.updateRowHeights(theScrollPane, tabelCal);
             }
         });
 
         tabelCal.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
         

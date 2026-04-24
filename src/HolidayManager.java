@@ -43,9 +43,16 @@ public class HolidayManager {
         // Automatically add holiday as a reminder so it displays in the calendar cell
         // Only add if it doesn't already exist
         String reminderKey = "🎉 " + holidayName;
-        List<String> existingReminders = ReminderManager.getReminders(year, month, day);
-        if (!existingReminders.contains(reminderKey)) {
-            ReminderManager.addReminder(year, month, day, reminderKey);
+        List<ReminderManager.Reminder> existingReminders = ReminderManager.getReminders(year, month, day);
+        boolean hasReminder = false;
+        for (ReminderManager.Reminder r : existingReminders) {
+            if (r.message.equals(reminderKey)) {
+                hasReminder = true;
+                break;
+            }
+        }
+        if (!hasReminder) {
+            ReminderManager.addReminder(year, month, day, new ReminderManager.Reminder(0, 0, "", reminderKey));
         }
     }
 
