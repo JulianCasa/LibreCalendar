@@ -18,7 +18,6 @@ public class CalendarRenderer extends DefaultTableCellRenderer {
             int displayDate = Math.abs(dateVal);
             setText(String.valueOf(displayDate));
 
-            // 👇 ADD THIS BLOCK HERE
             List<ReminderManager.Reminder> reminders =
                 ReminderManager.getReminders(
                     LibreCal.currentYear,
@@ -35,6 +34,13 @@ public class CalendarRenderer extends DefaultTableCellRenderer {
 
             if (dateVal > 0) {
                 setForeground(ThemeManager.text());
+
+                // html used to allow multi-line text and smaller font for reminder count
+                if (!reminders.isEmpty()) {
+                    setText("<html>" + displayDate + 
+                            "<br><span style='font-size:8px'>● " + reminders.size() + " reminder" +
+                            (reminders.size() > 1 ? "s" : "") + "</span></html>");
+                }
 
                 if (selected) {
                     setBackground(ThemeManager.selected());

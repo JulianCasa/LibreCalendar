@@ -3,12 +3,12 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-import java.util.prefs.Preferences; // added for saving light/dark mode preference across sessions
+import java.util.prefs.Preferences;
 
 public class LibreCal {//Authored by Vaibhav Thakkar, Ariane Quenum, Michael Woelfel
     // Modified by Arek Gubala
 
-    static JLabel LabelMonth;
+    static JLabel LabelMonth, calendarLogoLabel;
     static JButton buttonPrev, buttonNext, buttonDarkMode;
     static JTable tabelCal;
     static JComboBox<String> comboYear;
@@ -18,10 +18,9 @@ public class LibreCal {//Authored by Vaibhav Thakkar, Ariane Quenum, Michael Woe
     static JPanel panelCal, headerPanel;
     static int todayYear, todayMonth, todayDay, currentYear, currentMonth;
     static DefaultTableModel mtabelCal;
-    static boolean darkMode = false; // tracks current theme state
+    static boolean darkMode = false;
 
 
-    // Entry point: initializes preferences, UI components, listeners, and loads calendar data
     public static void main(String[] args) {
         loadPreferences();
         initFrame();
@@ -65,11 +64,25 @@ public class LibreCal {//Authored by Vaibhav Thakkar, Ariane Quenum, Michael Woe
         mtabelCal = new DefaultTableModel() {
             public boolean isCellEditable(int r, int c) { return false; }
         };
-    
         tabelCal = new JTable(mtabelCal);
         theScrollPane = new JScrollPane(tabelCal);
+        theScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        theScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
         panelCal = new JPanel(new BorderLayout());
-        panelCal.setBorder(BorderFactory.createTitledBorder("Calendar"));
+        panelCal.setOpaque(false);
+        panelCal.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5)); 
+
+        calendarLogoLabel = new JLabel();
+        try {
+            java.net.URL imgURL = LibreCal.class.getResource("/assets/CroppedLogo.png");
+            if (imgURL != null) {
+                Image img = new ImageIcon(imgURL).getImage().getScaledInstance(105, 28, Image.SCALE_SMOOTH);
+                calendarLogoLabel.setIcon(new ImageIcon(img));
+            }
+        } catch (Exception e) {
+            calendarLogoLabel.setText("calendar"); // fallback text if logo fails
+        }
     }
 
     // Configures calendar table structure, headers, and renderers
@@ -142,15 +155,27 @@ public class LibreCal {//Authored by Vaibhav Thakkar, Ariane Quenum, Michael Woe
 
     // Arranges UI components into the main frame using layout managers
     static void initLayout() {
-        headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        headerPanel.add(buttonPrev);
-        headerPanel.add(LabelMonth);
-        headerPanel.add(comboYear);
-        headerPanel.add(buttonNext);
-        headerPanel.add(buttonDarkMode);
-    
+        JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        navPanel.setOpaque(false); 
+        navPanel.add(buttonPrev);
+        navPanel.add(LabelMonth);
+        navPanel.add(comboYear);
+        navPanel.add(buttonNext);
+        navPanel.add(buttonDarkMode);
+
+        // Logo row 
+        JPanel logoArea = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        logoArea.setOpaque(false); 
+        logoArea.add(calendarLogoLabel);
+
+        // Header panel
+        headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setOpaque(false); // ThemeManager will change this to true in dark mode
+        headerPanel.add(logoArea, BorderLayout.NORTH);
+        headerPanel.add(navPanel, BorderLayout.CENTER);
+
         panelCal.add(headerPanel, BorderLayout.NORTH);
-        panelCal.add(theScrollPane, BorderLayout.CENTER);
+        panelCal.add(theScrollPane, BorderLayout.CENTER);        
         pane.add(panelCal, BorderLayout.CENTER);
     }
 
@@ -173,7 +198,7 @@ public class LibreCal {//Authored by Vaibhav Thakkar, Ariane Quenum, Michael Woe
 
     // Final UI setup: sizing, theme application, and displaying the window
     static void finalizeUI() {
-        mainFrame.setMinimumSize(new Dimension(600, 450));
+        mainFrame.setMinimumSize(new Dimension(620, 450));
         mainFrame.pack();
         buttonDarkMode.setText(darkMode ? "\u2600" : "\u263E");
         ThemeManager.applyTheme();

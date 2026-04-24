@@ -61,12 +61,7 @@ public class ThemeManager {
             ? BorderFactory.createLineBorder(DARK_PANEL)
             : BorderFactory.createLineBorder(new Color(200, 200, 200)));
 
-        // Keep "Calendar" at the top-left readable regardless of theme
-        LibreCal.panelCal.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(LibreCal.darkMode ? DARK_PANEL : Color.gray),
-            "Calendar", 0, 0, null,
-            LibreCal.darkMode ? DARK_TEXT : null
-        ));
+        LibreCal.panelCal.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         LibreCal.mainFrame.getContentPane().setBackground(panel());
         LibreCal.tabelCal.getTableHeader().setOpaque(true);
@@ -82,8 +77,6 @@ public class ThemeManager {
         JPanel timeRow, JSpinner hourSpinner, JSpinner minSpinner, JToggleButton amPmToggle) {
             
             if (LibreCal.darkMode) {
-                // 1. Fix the Mac Native Title Bar
-                // This tells macOS to use the dark mode version of the window frame
                 dialog.getRootPane().putClientProperty("apple.awt.windowAppearance", "NSAppearanceNameDarkAqua");
     
                 // main window frame
@@ -98,8 +91,7 @@ public class ThemeManager {
                 scrollPane.getViewport().setBackground(bg());
                 scrollPane.setBorder(BorderFactory.createLineBorder(header()));
     
-                // 2. Lighten up the Text Field
-                // Creates a distinct, lighter gray so the input field doesn't disappear into the background
+                // text field color
                 Color fieldBg = new Color(65, 65, 65); 
                 field.setBackground(fieldBg);
                 field.setForeground(text());
@@ -121,10 +113,9 @@ public class ThemeManager {
                 mEditor.setForeground(text());
                 mEditor.setBorder(BorderFactory.createEmptyBorder());
     
-                // 3. Fix the AM/PM Toggle
                 amPmToggle.setBackground(fieldBg);
                 amPmToggle.setForeground(text());
-                // macOS buttons are transparent by default; this forces the color to actually paint
+                
                 amPmToggle.setOpaque(true); 
                 amPmToggle.setBorderPainted(false);
             }
